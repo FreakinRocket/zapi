@@ -24,8 +24,8 @@ type Config struct {
 }
 
 // make a call to the configured API, stores response into input struct and check for error
-func ApiCall(uri string, v any, c *Config) {
-	ChkError(json.Unmarshal(tryGet(uri, c), v))
+func ApiCall(uri string, object any, c *Config) {
+	ChkError(json.Unmarshal(tryGet(uri, c), object))
 }
 
 // performs a http GET call with oauth2 bearer presentation in header
