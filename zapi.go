@@ -24,7 +24,7 @@ type Config struct {
 }
 
 // make a call to the configured API, stores response into input struct and check for error
-func ApiCall(uri string, object any, c *Config) {
+func Call(uri string, object any, c *Config) {
 	ChkError(json.Unmarshal(tryGet(uri, c), object))
 }
 
