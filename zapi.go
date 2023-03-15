@@ -6,11 +6,11 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
+
+	"github.com/FreakinRocket/zjson"
 )
 
 // ### CONSTANTS ###
-const CONFIG_PATH string = "config.json"
 
 // struct contains information that should remain secret and not be included in the online repository
 type Config struct {
@@ -20,24 +20,7 @@ type Config struct {
 	Code         string `json:"code"`
 	RefreshToken string `json:"refresh_token"`
 	AccessToken  string `json:"access_token"`
-}
-
-// loads config into config struct from given file name
-func (c *Config) LoadConfig() {
-	jsonFile, err := os.Open(CONFIG_PATH)
-	ChkError(err)
-	defer jsonFile.Close()
-
-	err = json.NewDecoder(jsonFile).Decode(c)
-	ChkError(err)
-}
-
-// saves config to file from struct
-func (c Config) saveConfig() {
-	jsonFile, err := json.MarshalIndent(c, "", " ")
-	ChkError(err)
-	err = os.WriteFile(CONFIG_PATH, jsonFile, 0644)
-	ChkError(err)
+	FilePath     string `json:"-"` //does not save file path into json
 }
 
 // make a call to the configured API, stores response into input struct and check for error
@@ -142,7 +125,7 @@ func getToken(c *Config) {
 			log.Fatalln("Failed to get token")
 		}
 	}
-	c.saveConfig()
+	zjson.SaveJSON(c, c.FilePath)
 }
 
 // saves programming time and log.fatalLn on an error
