@@ -20,6 +20,7 @@ type Config struct {
 	Code         string `json:"code"`
 	RefreshToken string `json:"refresh_token"`
 	AccessToken  string `json:"access_token"`
+	GrantType    string `json:"grant_type"`
 	FilePath     string `json:"-"` //does not save file path into json
 }
 
@@ -72,6 +73,7 @@ func getTokenFromRefresh(c *Config) (statusCode int) {
 		"refresh_token": c.RefreshToken,
 		"client_id":     c.ClientID,
 		"client_secret": c.ClientSecret,
+		"grant_type":    c.GrantType,
 	})
 	ChkError(err)
 
