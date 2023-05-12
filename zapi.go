@@ -16,7 +16,8 @@ import (
 type Config struct {
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
-	Host         string `json:"api_URL"`
+	RestHost     string `json:"api_URL"`  //RestAPI host for making requests, not authenticating
+	AuthHost     string `json:"auth_URL"` //some API's have a seperate Host URL for authenticating tokens versus making a normal API request
 	Code         string `json:"code"`
 	RefreshToken string `json:"refresh_token"`
 	AccessToken  string `json:"access_token"`
@@ -78,7 +79,7 @@ func getTokenFromRefresh(c *Config) (statusCode int) {
 	ChkError(err)
 
 	//make request
-	respBody, statusCode := HttpPost(c.Host, "/token", requestBody)
+	respBody, statusCode := HttpPost(c.AuthHost, "/token", requestBody)
 
 	//unmarshal response
 	err = json.Unmarshal(respBody, &c)
@@ -89,10 +90,10 @@ func getTokenFromRefresh(c *Config) (statusCode int) {
 
 // a http GET where if the first one fails it gets a new access code then tries again. This is how expired codes are handled
 func tryGet(uri string, c *Config) (respBody []byte) {
-	respBody, status := HttpGet(c.Host, uri, c.AccessToken)
+	respBody, status := HttpGet(c.RestHost, uri, c.AccessToken)
 	if status != 200 {
 		getToken(c)
-		respBody, status = HttpGet(c.Host, uri, c.AccessToken)
+		respBody, status = HttpGet(c.RestHost, uri, c.AccessToken)
 		if status != 200 {
 			log.Fatalln(respBody, status)
 		}
@@ -112,7 +113,7 @@ func getTokensFromCode(c *Config) (statusCode int) {
 	ChkError(err)
 
 	//make request
-	respBody, statusCode := HttpPost(c.Host, "/token", requestBody)
+	respBody, statusCode := HttpPost(c.AuthHost, "/token", requestBody)
 
 	//unmarshal response
 	json.Unmarshal(respBody, &c)
